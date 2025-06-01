@@ -1,0 +1,200 @@
+.centered-image {
+  display: block;
+  margin: auto;
+}
+
+.centered-text {
+  text-align: center;
+}
+
+.dhml {
+  color: black !important;
+  font-weight: bold;
+}
+
+.hmo {
+  color: red !important;
+  font-weight: bold;
+}
+
+.form-form {
+  position: absolute !important;
+  right: 0 !important;
+}
+
+.form-image .l-image{
+  background-color: #9a1b2e !important;
+  background-image: none !important;
+  padding: 40px 0 !important;
+}
+
+.form-form-wrap{
+  max-width: 550px !important;
+}
+
+.form-form .form-form-wrap h1 .brand-name{
+  font-size: 22px !important;
+  font-weight: bold !important;
+  text-align: center !important;
+}
+
+.terms-conditions{
+  text-align: center !important;
+}
+
+/* enrollment image upload styles */
+#example-basic h3 {
+  color: #4361ee !important;
+}
+
+.upload-button {
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.image-preview {
+  width: 100%;
+  height: 150px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+}
+.image-preview img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.sbm-btn-div{
+  position: relative;
+  top: 85px;
+}
+
+.wizard > .actions {
+  margin-top: 0 !important;
+  margin-bottom: 100px !important;
+}
+
+.wizard > .content {
+  padding-bottom: 0 !important;
+}
+
+#AddDependantTab {
+  list-style: none !important;
+  justify-content: left !important;
+}
+
+.bootstrap-select.btn-group.disabled-field>.dropdown-toggle {
+  cursor: not-allowed !important;
+  background-color: #f1f2f3!important;
+  color: #bfcad5 !important;
+}
+
+.custom-label {
+  margin-bottom: 0; /* Optionally remove bottom margin for labels */
+}
+
+.custom-h6 {
+  margin-top: 2px; /* Reduce top margin for <h6> tags */
+  margin-bottom: 16px;
+  font-weight: lighter;
+  font-size: 14px;
+}
+
+.loader-sm{
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.nhis-id-card{
+  border-radius: 10px; 
+  width: 80%;
+}
+
+.dropdown-menu.inner {
+  max-height: 200px !important; 
+  overflow-y: auto !important; 
+}
+
+/* Styles for small screens */
+@media (max-width: 767px) {
+  /* CSS rules here will be applied only for screens with a maximum width of 767 pixels */
+  .sbm-btn-div{
+    top: 50px;
+  }
+}
+
+ .my-card-animation {
+      background: #07182E !important;
+      position: relative;
+      display: flex;
+      place-content: center;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 20px;
+  }
+
+  .my-card-animation::before {
+      content: '';
+      position: absolute;
+      width: 300px;
+      background-image: linear-gradient(180deg, rgb(0, 183, 255), rgb(255, 48, 255));
+      height: 130%;
+      animation: rotBGimg 3s linear infinite;
+      transition: all 0.2s linear;
+  }
+
+  @keyframes rotBGimg {
+      from {
+          transform: rotate(0deg);
+      }
+
+      to {
+          transform: rotate(360deg);
+      }
+  }
+
+  .my-card-animation::after {
+      content: '';
+      position: absolute;
+      /*background: linear-gradient(315deg, #805dca 0%, #4361ee 74%);*/
+      background: #fff;
+      inset: 5px;
+      border-radius: 15px;
+  }
+
+  .my-card-animation>div {
+      z-index: 1;
+  }
+
+    .blockui-growl-message {
+      display: none;
+      text-align: left;
+      padding: 15px;
+      background-color: #455a64;
+      color: #fff;
+      border-radius: 3px;
+    }
+  
+    .blockui-animation-container {
+      display: none;
+    }
+  
+    .multiMessageBlockUi {
+      display: none;
+      background-color: #455a64;
+      color: #fff;
+      border-radius: 3px;
+      padding: 15px 15px 10px 15px;
+    }
+  
+    .multiMessageBlockUi i {
+      display: block
+    }
+
+    

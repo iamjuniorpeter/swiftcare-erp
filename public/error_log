@@ -1,0 +1,10 @@
+[23-Apr-2025 13:57:34 UTC] PHP Fatal error:  Uncaught BadMethodCallException: Method Illuminate\Foundation\Application::handleRequest does not exist. in /home/nr3m1eeqdrbz/public_html/app.swiftcaredistribution.com/vendor/laravel/framework/src/Illuminate/Macroable/Traits/Macroable.php:112
+Stack trace:
+#0 /home/nr3m1eeqdrbz/public_html/app.swiftcaredistribution.com/public/index.php(20): Illuminate\Foundation\Application->__call()
+#1 {main}
+  thrown in /home/nr3m1eeqdrbz/public_html/app.swiftcaredistribution.com/vendor/laravel/framework/src/Illuminate/Macroable/Traits/Macroable.php on line 112
+[23-Apr-2025 13:59:05 UTC] PHP Fatal error:  Uncaught BadMethodCallException: Method Illuminate\Foundation\Application::handleRequest does not exist. in /home/nr3m1eeqdrbz/public_html/app.swiftcaredistribution.com/vendor/laravel/framework/src/Illuminate/Macroable/Traits/Macroable.php:112
+Stack trace:
+#0 /home/nr3m1eeqdrbz/public_html/app.swiftcaredistribution.com/public/index.php(20): Illuminate\Foundation\Application->__call()
+#1 {main}
+  thrown in /home/nr3m1eeqdrbz/public_html/app.swiftcaredistribution.com/vendor/laravel/framework/src/Illuminate/Macroable/Traits/Macroable.php on line 112
