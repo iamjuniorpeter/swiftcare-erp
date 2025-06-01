@@ -23,6 +23,9 @@
                 <img src="{{ asset('@assets/img/logo.png') }}" class="centered-image" />
                 <!-- <h1 class="centered-text dhml">Swift Care Distribution</h1> -->
                 <h3 class="centered-text text-white mt-5">ERP Solution</h3>
+                <p class="mt-5 text-center">
+                    <span id="siteseal"><script async type="text/javascript" src="https://seal.godaddy.com/getSealBasic?sealID=eORFeoiJK7551udx6Xamp15Y4hys5HOLmJHtOElIAB24qXqbpSRbJCSbed23"></script></span>
+                </p>
             </div>
         </div>
         <div class="form-form">

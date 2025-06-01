@@ -460,6 +460,10 @@ $account_category = $logged_in_user->accountCategory->code;
             </li>
             @endif
 
+            <li class="menu mt-5">
+                <span id="siteseal"><script async type="text/javascript" src="https://seal.godaddy.com/getSealBasic?sealID=eORFeoiJK7551udx6Xamp15Y4hys5HOLmJHtOElIAB24qXqbpSRbJCSbed23"></script></span>
+            </li>
+
 
 
 
