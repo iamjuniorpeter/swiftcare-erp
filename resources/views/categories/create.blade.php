@@ -30,7 +30,7 @@
                             <div class="text-right">
                                 <button type="submit" class="btn btn-lg btn-primary mt-3 btnSaveCategory" name="btnSaveCategory" id="btnSaveCategory">Save Category</button>
                             </div>
-                            
+
                         </form>
                     </div>
                 </div>

@@ -71,7 +71,7 @@ $account_category = $logged_in_user->accountCategory->code;
                 </a>
                 <ul class="collapse submenu list-unstyled" id="manage-inventory" data-parent="#accordionExample">
                     <li>
-                        <a href="{{ route('items.create') }}"> Products / Items </a>
+                        <a href="{{ route('items.create') }}"> Items Master</a>
                     </li>
                     <li>
                         <a href="{{ route('warehouses.create') }}"> Locations </a>
@@ -105,7 +105,7 @@ $account_category = $logged_in_user->accountCategory->code;
                 </a>
                 <ul class="collapse submenu list-unstyled" id="manage-order-sales" data-parent="#accordionExample">
                     <li>
-                        <a href="{{ route('items.create') }}"> Add New Order / Sale </a>
+                        <a href="{{ route('sales_order_items.create') }}"> Add New Order / Sale </a>
                     </li>
                     <li>
                         <a href="#" class="contact-admin"> Rentals </a>
@@ -133,19 +133,19 @@ $account_category = $logged_in_user->accountCategory->code;
                 <a href="javascript:void(0)" aria-expanded="false" class="dropdown-toggle">
                     <div class="">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart nav-icon me-2 icon-xxs"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
-                        
+
                         <span>Forecasting</span>
                     </div>
                 </a>
             </li>
-            
+
             <li class="contact-admin menu {{ $menutitle == 'supplier-list' ? 'active': ''}}">
                 <!-- {{ route('suppliers.index') }} -->
                 <a href="javascript:void(0)" aria-expanded="false" class="dropdown-toggle">
                     <div class="">
                         <!-- Custom Inventory Icon: Stacked Boxes in a Warehouse Frame -->
-                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" 
-                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" 
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"
                              xmlns="http://www.w3.org/2000/svg">
                           <!-- Avatar -->
                           <circle cx="6" cy="7" r="3" />
@@ -165,8 +165,8 @@ $account_category = $logged_in_user->accountCategory->code;
                 <a href="#manage-purchase-orders" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                     <div class="">
                         <!-- Custom Inventory Icon: Stacked Boxes in a Warehouse Frame -->
-                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" 
-                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" 
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"
                              xmlns="http://www.w3.org/2000/svg">
                             <path d="M8 2h8a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" />
                             <path d="M9 12l2 2l4 -4" />
@@ -193,13 +193,13 @@ $account_category = $logged_in_user->accountCategory->code;
                 <!--    </li>-->
                 <!--</ul>-->
             </li>
-            
+
             <li class="contact-admin menu {{ $menutitle == 'cost-insights' ? 'active': ''}}">
                 <a href="javascript:void(0)" aria-expanded="false" class="dropdown-toggle">
                     <div class="">
                         <!-- Custom Inventory Icon: Stacked Boxes in a Warehouse Frame -->
-                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" 
-                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" 
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"
                              xmlns="http://www.w3.org/2000/svg">
                           <circle cx="10" cy="10" r="7" />
                           <line x1="21" y1="21" x2="15" y2="15" />
@@ -428,7 +428,7 @@ $account_category = $logged_in_user->accountCategory->code;
                     </li>
                 </ul>
             </li>
-            
+
             <li class="menu {{ $menutitle == 'manage-customers' ? 'active': ''}}">
                 <a href="#manage-customers" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                     <div class="">

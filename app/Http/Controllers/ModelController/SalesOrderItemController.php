@@ -2,14 +2,26 @@
 
 namespace App\Http\Controllers\ModelController;
 
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
-
+use App\Models\Item;
 use App\Models\SalesOrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class SalesOrderItemController extends Controller
 {
+
+    public function create()
+    {
+
+        $merchant_id = Auth::user()->accountID;
+
+        $items = Item::where("merchantID", $merchant_id);
+
+        return view('sales_order_items.create', compact('items'));
+    }
+
     public function index()
     {
         try {
