@@ -10,7 +10,7 @@ class SalesOrderItem extends Model
     protected $primaryKey = 'sn';
     public $incrementing = true;
 
-    protected $fillable = ['soi_id', 'soID', 'itemID', 'quantity', 'unit_price'];
+    protected $fillable = ['soi_id', 'soID', 'itemID', 'quantity', 'unit_price', 'customer_name', 'customer_email'];
 
     // A sales order item belongs to a sales order.
     public function salesOrder()

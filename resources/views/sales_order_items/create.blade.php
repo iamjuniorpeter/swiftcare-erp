@@ -18,25 +18,31 @@
                                 <select id="itemID"
                                         name="itemID"
                                         class="form-selec form-control cmbSelect2">
-                                        @foreach ($items as $item)
-                                            <option value="{{ $item->item_code }}">{{ $item->name }}</option>
-                                        @endforeach
 
+                                        {!! $optionsHtml !!}
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="qty">Quantity</label>
-                                <input type="number" class="form-control" id="qty" name="qty" />
+                                <input type="number"
+                                    class="form-control"
+                                    id="qty"
+                                    name="qty"
+                                    min="0"
+                                    step="1"
+                                    pattern="\d*"
+                                    inputmode="numeric"
+                                    required />
                             </div>
 
                             <div class="form-group">
-                                <label for="qty">Customer Name</label>
+                                <label for="customer name">Customer Name</label>
                                 <input class="form-control" id="cust_name" name="cust_name" type="text" />
                             </div>
 
                             <div class="form-group">
-                                <label for="qty">Customer Email</label>
-                                <input class="form-control" id="cust_email" type="text" name="cust_email" />
+                                <label for="customer email">Customer Email</label>
+                                <input class="form-control" id="qty" type="text" name="qty" />
                             </div>
 
                             <input type="hidden" id="merchantID" name="merchantID" class="form-control" value="{{ Auth::user()->accountID }}">
