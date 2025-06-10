@@ -25,17 +25,56 @@
                                 <label for="warehouseID">Warehouse ID</label>
                                 <input type="text" class="form-control" id="warehouseID" name="warehouseID" required>
                             </div> --}}
+                                
                             <div class="row">
-                                <div class="col-6">
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="location">Location</label>
+                                        <select id="location"
+                                                name="location"
+                                                class="form-select form-control cmbSelect2">
+                                            {!! $location_list !!}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-4">
                                     <div class="form-group">
                                         <label for="expiry_date">Expiry Date</label>
                                         <input type="date" class="form-control" id="expiry_date" name="expiry_date">
                                     </div>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-4">
                                      <div class="form-group">
                                         <label for="quantity">Quantity</label>
                                         <input type="number" step="0.01" class="form-control" id="quantity" name="quantity" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="supplier">Supplier</label>
+                                        <select id="supplier"
+                                                name="supplier"
+                                                class="form-select form-control cmbSelect2">
+                                            {!! $supplier_list !!}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="status">Status</label>
+                                        <select id="status"
+                                                name="status"
+                                                class="form-select form-control cmbSelect2">
+                                            {!! $status_list !!}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="expiry_date">Remark</label>
+                                        <textarea class="form-control" id="remark" name="remark"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -54,8 +93,8 @@
 
             <div class="col-10 offset-1 mt-3 mb-3">
                 <div class="card mt-3">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h3>Item Batches</h3>
+                    <div class="card-header bg-primary d-flex justify-content-between align-items-center">
+                        <h3 class="text-white">Item Batches</h3>
                     </div>
                     <div class="card-body">
                         <table class="table table-bordered myDataTable">
@@ -65,6 +104,10 @@
                                     <th>Batch Number</th>
                                     <th>Expiry Date</th>
                                     <th>Quantity</th>
+                                    <th>Location</th>
+                                    <th>Supplier</th>
+                                    <th>Status</th>
+                                    <th>Remark</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -74,6 +117,10 @@
                                     <td>{{ $batch->batch_number }}</td>
                                     <td>{{ $batch->expiry_date }}</td>
                                     <td>{{ $batch->quantity }}</td>
+                                    <td>{{ $batch->warehouse?->name }}</td>
+                                    <td>{{ $batch->supplier?->name }}</td>
+                                    <td>{{ $batch->status }}</td>
+                                    <td>{{ $batch->notes }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>

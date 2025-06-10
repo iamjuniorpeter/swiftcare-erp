@@ -59,7 +59,7 @@
                                             <circle cx="12" cy="12" r="3"></circle>
                                         </svg>
                                     </a> --}}
-                                    <a href="{{ route('item_batches.create', $item->sn) }}"
+                                    <a href="{{ route('item_batches.create', $item->item_id) }}"
                                     class="btn btn-sm btn-primary"
                                     title="Add Item Batch">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -70,7 +70,7 @@
                                             <line x1="9" y1="13" x2="15" y2="13" />
                                         </svg>
                                     </a>
-                                    <a href="{{ route('items.edit', $item->sn) }}"
+                                    <a href="{{ route('items.edit', $item->item_id) }}"
                                     class="btn btn-sm btn-info"
                                     title="Edit">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

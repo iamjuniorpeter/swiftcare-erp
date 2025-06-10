@@ -15,7 +15,11 @@ class ItemBatch extends Model
         'batch_number',
         'warehouseID',
         'expiry_date',
-        'quantity'
+        'quantity',
+        'supplierID',
+        'status',
+        'notes',
+        'barcode'
     ];
 
     /**
@@ -32,7 +36,12 @@ class ItemBatch extends Model
      */
     public function warehouse()
     {
-        return $this->belongsTo(Warehouse::class, 'warehouseID', 'sn');
+        return $this->belongsTo(Warehouse::class, 'warehouseID', 'warehouse_id');
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, 'supplierID', 'supplier_id');
     }
 
     public function usages()

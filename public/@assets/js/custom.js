@@ -2549,3 +2549,65 @@ function saveCustomer() {
         });
     }
 }
+
+function saveItemBatch() {
+    if ($("#btnSaveItemBatch")) {
+        $(document).on("click submit", "#btnSaveItemBatch", function(e) {
+            e.preventDefault();
+
+            var btn = $(this);
+            var frm = $("#frmSaveItemBatch");
+            var loader = $("#frmAddHcpPaymentLoader");
+
+            var formAction = frm.attr("action");
+            var formMethod = frm.attr("method");
+            var formData = frm.serialize();
+
+            //btn.hide();
+            loader.show();
+
+            swal({
+                title: "Do you want to proceed with this request?",
+                text: "You won't be able to revert this!",
+                showCancelButton: true,
+                confirmButtonText: "Yes, Proceed",
+                padding: "2em",
+            }).then(function(result) {
+                if (result.value) {
+                    $.ajax({
+                        url: formAction,
+                        headers: {
+                            "X-CSRF-Token": $('input[name="_token"]').val(),
+                        },
+                        type: formMethod,
+                        data: formData,
+                        dataType: "JSON",
+                        success: function(response) {
+                            //console.log(response);
+                            if (response.status.trim() == "success") {
+                                showSnackBar(response.message, "success");
+
+                                frm[0].reset();
+                                btn.show();
+                                loader.hide();
+
+                                location.reload();
+                            } else {
+                                btn.show();
+                                loader.hide();
+
+                                handleErrors(response);
+                            }
+                        },
+                        error: function(x, e) {
+                            btn.show();
+                            loader.hide();
+
+                            handleErrors(formatErrorMessage(x, e));
+                        },
+                    });
+                }
+            });
+        });
+    }
+}

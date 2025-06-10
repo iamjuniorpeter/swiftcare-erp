@@ -40,7 +40,7 @@ class CustomerController extends Controller
             'name'        => ['required'],
             'contact_person' => ['sometimes'],
             'phone'          => ['sometimes'],
-            'email'          => ['sometimes', 'email'],
+            'email'          => ['sometimes'],
             'address'        => ['sometimes'],
             'status'         => ['sometimes'],
         ];

@@ -15,6 +15,7 @@ use App\Models\ItemBatch;
 use App\Models\Category;
 use App\Models\Warehouse;
 use App\Models\Unit;
+use App\Models\Supplier;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -682,6 +683,33 @@ class Controller extends BaseController
                 $cmb_list .= "<option value='" . $status->name . "' selected='selected'>" . ucwords($status->name) . " </option>";
             } else {
                 $cmb_list .= "<option value='" . $status->name . "'>" . ucwords($status->name) . " </option>";
+            }
+        }
+
+        return $cmb_list;
+    }
+
+    public function loadSupplierIntoCombo($param_cat = "")
+    {
+        $merchant_id = Auth::user()->accountID;
+        $supplier_list = Supplier::where(function ($query) use ($merchant_id) {
+            $query->where('merchantID', $merchant_id)
+                  ->orWhereNull('merchantID')
+                  ->orWhere('merchantID', '');
+        })
+        ->get();
+
+        if (count($supplier_list) < 1) {
+            return "<option value='-1'>No Data Available</option>";
+        }
+
+        $cmb_list = "<option value='-1'>Select Supplier</option>";
+
+        foreach ($supplier_list as $supplier) {
+            if ($supplier->supplier_id == $param_cat) {
+                $cmb_list .= "<option value='" . $supplier->supplier_id . "' selected='selected'>" . $supplier->name . " </option>";
+            } else {
+                $cmb_list .= "<option value='" . $supplier->supplier_id . "'>" . $supplier->name . " </option>";
             }
         }
 
