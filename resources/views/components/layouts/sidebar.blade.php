@@ -91,22 +91,26 @@ $account_category = $logged_in_user->accountCategory->code;
                 </ul>
             </li>
 
-            <li class="contact-admin menu {{ $menutitle == 'order-sales' ? 'active': ''}}">
-                <a href="javascript:void(0)" aria-expanded="false" class="dropdown-toggle">
+            <li class="menu {{ $menutitle == 'order-sales' ? 'active': ''}}">
+                <a href="#manage-order-sales" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                     <div class="">
-                        <!-- Custom Inventory Icon: Stacked Boxes in a Warehouse Frame -->
-                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
-                             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"
-                             xmlns="http://www.w3.org/2000/svg">
-                          <rect x="3" y="7" width="13" height="13" rx="2" />
-                          <path d="M8 7V3h8a2 2 0 0 1 2 2v10" />
-                          <path d="M16 21l5-5" />
-                          <circle cx="20" cy="16" r="1" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layout nav-icon me-2 icon-xxs"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                        <span>Order - Sales</span>
+                    </div>
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+                            <polyline points="9 18 15 12 9 6"></polyline>
                         </svg>
-
-                        <span>Rentals</span>
                     </div>
                 </a>
+                <ul class="collapse submenu list-unstyled" id="manage-order-sales" data-parent="#accordionExample">
+                    <li>
+                        <a href="{{ route('items.create') }}"> Add New Order / Sale </a>
+                    </li>
+                    <li>
+                        <a href="#" class="contact-admin"> Rentals </a>
+                    </li>
+                </ul>
             </li>
 
             <li class="contact-admin menu {{ $menutitle == 'warehouse-logistics' ? 'active': ''}}">

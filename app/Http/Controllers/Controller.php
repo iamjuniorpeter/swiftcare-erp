@@ -14,6 +14,7 @@ use App\Http\Controllers\ModelController\ZoneController;
 use App\Models\ItemBatch;
 use App\Models\Category;
 use App\Models\Warehouse;
+use App\Models\Unit;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -638,7 +639,7 @@ class Controller extends BaseController
     public function loadUnitsIntoCombo($param_cat = "")
     {
         $merchant_id = Auth::user()->accountID;
-        $unit_list = Warehouse::where(function ($query) use ($merchant_id) {
+        $unit_list = Unit::where(function ($query) use ($merchant_id) {
             $query->where('merchantID', $merchant_id)
                   ->orWhereNull('merchantID')
                   ->orWhere('merchantID', '');

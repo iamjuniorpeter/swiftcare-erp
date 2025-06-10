@@ -55,8 +55,8 @@
                                 </div>
                                 <select id="categoryID"
                                         name="categoryID"
-                                        class="form-select form-control cmbSelect2 categoryIDMain">
-                                    {!! $category_list !!}
+                                        class="form-selec form-control cmbSelect2 categoryIDMain">
+                                        {!! $category_list !!}
                                 </select>
                                 @error('categoryID')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -88,8 +88,8 @@
                                 </div>
                                 <select id="unitID"
                                         name="unitID"
-                                        class="form-select @error('unitID') is-invalid @enderror form-control cmbSelect2">
-                                    {!! $unit_list !!}
+                                        class="form-select form-control cmbSelect2">
+                                        {!! $unit_list !!}
                                 </select>
                                 @error('unitID')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -110,7 +110,7 @@
                             </div>
 
                             {{-- Cost Price --}}
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label for="cost_price" class="form-label">Cost Price</label>
                                 <input type="number"
                                     step="0.01"
@@ -124,7 +124,7 @@
                             </div>
 
                             {{-- Selling Price --}}
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label for="selling_price" class="form-label">Selling Price</label>
                                 <input type="number"
                                     step="0.01"
@@ -138,7 +138,7 @@
                             </div>
 
                             {{-- Reorder Level --}}
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label for="reorder_level" class="form-label">Reorder Level</label>
                                 <input type="number"
                                     step="0.01"
@@ -151,21 +151,7 @@
                                 @enderror
                             </div>
 
-                            {{-- Location / Warehouse --}}
-                            <div class="col-md-3 mb-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <label for="location" class="form-label mb-2">Location <small class="text-danger">(optional)</small></label>
-                                    <a href="javascript:void(0)" class="text-end text-info text-bold" id="labelAddLocation">Add Location</a>
-                                </div>
-                                <select id="location"
-                                        name="location"
-                                        class="form-select @error('location') is-invalid @enderror form-control cmbSelect2">
-                                    {!! $location_list !!}
-                                </select>
-                                @error('unitID')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                            
                         </div>
 
                         <input type="hidden" id="item_id" name="item_id" class="form-control" value="" />
@@ -183,6 +169,25 @@
       </div>
     </div>
 
+    <x-slot name="scripts">
+        <script src="{{ asset('@assets/plugins/select2/select2.min.js') }}"></script>
+        <script src="{{ asset('@assets/plugins/bootstrap-select/bootstrap-select.min.js') }}"></script>
+        <script>
+            applySelect2([".cmbSelect2"]);
+            saveCategory();
+            saveSubCategory();            
+            saveUnit();
+            saveItem();
+            saveWarehouse();
+            showModal("#labelAddUnit", "#addNewUnitModal");
+            showModal("#labelAddCategory", "#addNewCategoryModal");
+            showModal("#labelAddSubCategory", "#addNewSubCategoryModal");
+            showModal("#labelAddLocation", "#addNewLocationModal");
+            getSubCategoryByCategory();
+            //applySelect2OnModal(".cmbSelect2", "#addNewSubCategoryModal");
+        </script>
+    </x-slot>
+
     <x-modal-add-new-category />
     <x-modal-add-new-sub-category 
         :categoryList="$category_list" 
@@ -191,22 +196,4 @@
     <x-modal-add-new-unit />
     <x-modal-add-new-warehouse />
 
-    <x-slot name="scripts">
-        <script src="{{ asset('@assets/plugins/select2/select2.min.js') }}"></script>
-        <script src="{{ asset('@assets/plugins/bootstrap-select/bootstrap-select.min.js') }}"></script>
-        <script>
-            applySelect2([".cmbSelect2"]);
-            applySelect2OnModal(".cmbSelect2", "#addNewSubCategoryModal");
-            saveCategory();
-            saveSubCategory();
-            getSubCategoryByCategory();
-            saveUnit();
-            saveItem();
-            saveWarehouse();
-            showModal("#labelAddUnit", "#addNewUnitModal");
-            showModal("#labelAddCategory", "#addNewCategoryModal");
-            showModal("#labelAddSubCategory", "#addNewSubCategoryModal");
-            showModal("#labelAddLocation", "#addNewLocationModal");
-        </script>
-    </x-slot>
 </x-layouts.master>

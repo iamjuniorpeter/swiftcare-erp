@@ -150,6 +150,8 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                             </div>
+
+                            
                         </div>
 
                         {{-- Hidden fields --}}
@@ -167,6 +169,25 @@
         </div>
     </div>
 
+<x-slot name="scripts">
+    <script src="{{ asset('@assets/plugins/select2/select2.min.js') }}"></script>
+    <script src="{{ asset('@assets/plugins/bootstrap-select/bootstrap-select.min.js') }}"></script>
+    <script>
+        applySelect2([".cmbSelect2"]);
+            saveCategory();
+            saveSubCategory();            
+            saveUnit();
+            saveItem();
+            saveWarehouse();
+            showModal("#labelAddUnit", "#addNewUnitModal");
+            showModal("#labelAddCategory", "#addNewCategoryModal");
+            showModal("#labelAddSubCategory", "#addNewSubCategoryModal");
+            showModal("#labelAddLocation", "#addNewLocationModal");
+            getSubCategoryByCategory();
+            //applySelect2OnModal(".cmbSelect2", "#addNewSubCategoryModal");
+    </script>
+</x-slot>
+
 <x-modal-add-new-category />
     <x-modal-add-new-sub-category 
         :categoryList="$category_list" 
@@ -175,22 +196,4 @@
     <x-modal-add-new-unit />
     <x-modal-add-new-warehouse />
 
-<x-slot name="scripts">
-    <script src="{{ asset('@assets/plugins/select2/select2.min.js') }}"></script>
-    <script src="{{ asset('@assets/plugins/bootstrap-select/bootstrap-select.min.js') }}"></script>
-    <script>
-        applySelect2([".cmbSelect2"]);
-        applySelect2OnModal(".cmbSelect2", "#addNewSubCategoryModal");
-        saveCategory();
-        saveSubCategory();
-        getSubCategoryByCategory();
-        saveUnit();
-        saveItem();
-        saveWarehouse();
-        showModal("#labelAddUnit", "#addNewUnitModal");
-        showModal("#labelAddCategory", "#addNewCategoryModal");
-        showModal("#labelAddSubCategory", "#addNewSubCategoryModal");
-        showModal("#labelAddLocation", "#addNewLocationModal");
-    </script>
-</x-slot>
 </x-layouts.master>
