@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ModelController;
 
 use App\Http\Controllers\Controller;
 
+use Illuminate\Support\Facades\Auth;
 use App\Models\Item;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -12,14 +13,11 @@ use App\Imports\ItemBulkUploadImport;
 
 class ItemController extends Controller
 {
-    /**
-     * Display a listing of items.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function index()
+    public function ItemIndex()
     {
-        $items = Item::with(['batches.usages'])->get()->map(function ($item) {
+        $merchant_id = Auth::user()->accountID;
+
+        $items = Item::where("merchantID", $merchant_id)->with(['batches.usages'])->get()->map(function ($item) {
             $totalStocked = 0;
             $totalUsed = 0;
 
@@ -33,118 +31,175 @@ class ItemController extends Controller
             return $item;
         });
 
-        return view('inventory.items.index', compact('items'));
+        return view('items.index', compact('items'));
     }
 
-    /**
-     * Show the form for creating a new item.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function create()
+    public function ItemCreate()
     {
-        return view('inventory.items.create');
+        $merchant_id = Auth::user()->accountID;
+
+        $category_list = $this->loadCategoryIntoCombo();
+        $sub_category_list = $this->loadSubCategoryIntoCombo();
+        $unit_list =  $this->loadUnitsIntoCombo();
+        $location_list =  $this->loadWarehousesIntoCombo();
+        $status_list =  $this->loadStatusIntoCombo();
+
+        return view('items.create', compact('category_list', 'sub_category_list', 'unit_list', 'location_list', 'status_list'));
     }
 
-    /**
-     * Store a newly created item in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function store(Request $request)
+    public function ItemStore(Request $request)
     {
-        $validated = $request->validate([
-            'item_id'       => 'required|unique:tbl_iv_items,item_id',
-            'merchantID'    => 'required',
-            'item_code'     => 'required|unique:tbl_iv_items,item_code',
-            'name'          => 'required',
-            'description'   => 'sometimes',
-            'categoryID'    => 'sometimes|exists:tbl_iv_categories,sn',
-            'unitID'        => 'sometimes|exists:tbl_iv_units,sn',
-            'status'        => 'sometimes|in:active,inactive',
-            'cost_price'    => 'sometimes|numeric',
-            'selling_price' => 'sometimes|numeric',
-            'barcode'       => 'sometimes',
-            'reorder_level' => 'sometimes|numeric',
-        ]);
+        $data  = $request->all();
+        $rules = [
+            //'item_id'      => ['required', 'unique:tbl_iv_items,item_id'],
+            'merchantID'   => ['required'],
+            //'item_code'    => ['required', 'unique:tbl_iv_items,item_code'],
+            'name'         => ['required'],
+            'description'  => ['sometimes'],
+            'categoryID'   => ['sometimes'],
+            'subCategoryID'   => ['sometimes'],
+            'unitID'       => ['sometimes'],
+            'status'       => ['sometimes'],
+            'cost_price'   => ['sometimes', 'numeric'],
+            'selling_price' => ['sometimes', 'numeric'],
+            'barcode'      => ['sometimes'],
+            'reorder_level' => ['sometimes', 'numeric'],
+        ];
 
-        Item::create($validated);
+        $validation = $this->validateData($data, $rules);
 
-        return redirect()
-            ->route('inventory.items.index')
-            ->with('success', 'Item created successfully.');
+        if ($validation->fails()) {
+            return $this->errorResponse("Kindly fill in all required fields.", ['errors' => $validation->errors()], 201);
+        }
+
+        // if user didn't supply one, generate it
+        if (empty($data['item_id'])) {
+            $data['item_id'] = $this->generateUniqueId("ITM", 8);
+        }
+
+        // if user didn't supply one, generate it
+        if (empty($data['item_code'])) {
+            $data['item_code'] = $this->generateUniqueId("CODE", 8);
+        }
+
+        try {
+            $result = DB::transaction(function () use ($data) {
+                $item = Item::create([
+                    'item_id'       => $data['item_id'],
+                    'merchantID'    => $data['merchantID'],
+                    'item_code'     => $data['item_code'],
+                    'name'          => $data['name'],
+                    'description'   => $data['description'] ?? null,
+                    'categoryID'    => $data['categoryID'] ?? null,
+                    'subCategoryID'    => $data['subCategoryID'] ?? null,
+                    'unitID'        => $data['unitID'] ?? null,
+                    'status'        => $data['status'] ?? 'active',
+                    'cost_price'    => $data['cost_price'] ?? 0,
+                    'selling_price' => $data['selling_price'] ?? 0,
+                    'barcode'       => $data['barcode'] ?? null,
+                    'reorder_level' => $data['reorder_level'] ?? 0,
+                ]);
+                return $this->successResponse("Item successfully created.", $item);
+            });
+            return $result;
+        } catch (\Exception $e) {
+            return $this->errorResponse("Error encountered while creating item.", $e->getMessage(), 201);
+        }
     }
 
-    /**
-     * Display the specified item.
-     *
-     * @param  int  $id
-     * @return \Illuminate\View\View
-     */
-    public function show($id)
+    public function ItemShow($id)
     {
+        try {
+            $item = Item::find($id);
+            if (!$item) {
+                return $this->errorResponse("Item not found.", [], 201);
+            }
+            return $this->successResponse("Item retrieved successfully.", $item);
+        } catch (\Exception $e) {
+            return $this->errorResponse("Error retrieving item.", $e->getMessage(), 201);
+        }
+    }
+
+    public function ItemUpdate(Request $request, $id)
+    {
+        $data  = $request->all();
+        $rules = [
+            'name'         => ['required'],
+            'description'  => ['sometimes'],
+            'categoryID'   => ['sometimes'],
+            'subCategoryID'   => ['sometimes'],
+            'unitID'       => ['sometimes'],
+            'status'       => ['sometimes'],
+            'cost_price'   => ['sometimes', 'numeric'],
+            'selling_price' => ['sometimes', 'numeric'],
+            'barcode'      => ['sometimes'],
+            'reorder_level' => ['sometimes', 'numeric'],
+        ];
+
+        $validation = $this->validateData($data, $rules);
+
+        if ($validation->fails()) {
+            return $this->errorResponse("Kindly fill in all required fields.", ['errors' => $validation->errors()], 201);
+        }
+
+        try {
+            $result = DB::transaction(function () use ($data, $id) {
+                $item = Item::find($id);
+                if (!$item) {
+                    return $this->errorResponse("Item not found.", [], 201);
+                }
+                $item->update([
+                    'name'          => $data['name'],
+                    'description'   => $data['description'] ?? $item->description,
+                    'categoryID'    => $data['categoryID'] ?? $item->categoryID,
+                    'subCategoryID'    => $data['subCategoryID'] ?? $item->subCategoryID,
+                    'unitID'        => $data['unitID'] ?? $item->unitID,
+                    'status'        => $data['status'] ?? $item->status,
+                    'cost_price'    => $data['cost_price'] ?? $item->cost_price,
+                    'selling_price' => $data['selling_price'] ?? $item->selling_price,
+                    'barcode'       => $data['barcode'] ?? $item->barcode,
+                    'reorder_level' => $data['reorder_level'] ?? $item->reorder_level,
+                ]);
+                return $this->successResponse("Item successfully updated.", $item);
+            });
+            return $result;
+        } catch (\Exception $e) {
+            return $this->errorResponse("Error encountered while updating item.", $e->getMessage(), 201);
+        }
+    }
+
+    public function ItemEdit($id)
+    {
+        // Fetch the item (or 404)
         $item = Item::findOrFail($id);
-        return view('inventory.items.show', compact('item'));
+        $merchant_id = Auth::user()->accountID;
+
+        $category_list = $this->loadCategoryIntoCombo($item->categoryID);
+        $sub_category_list = $this->loadSubCategoryIntoCombo($item->subCategoryID);
+        $unit_list =  $this->loadUnitsIntoCombo($item->unitID);
+        $location_list =  $this->loadWarehousesIntoCombo($item->warehouseID);
+        $status_list =  $this->loadStatusIntoCombo($item->status);
+
+        return view('items.edit', compact('item', 'category_list', 'sub_category_list', 'unit_list', 'location_list', 'status_list'));
+
     }
 
-    /**
-     * Show the form for editing the specified item.
-     *
-     * @param  int  $id
-     * @return \Illuminate\View\View
-     */
-    public function edit($id)
+    public function ItemDestroy($id)
     {
-        $item = Item::findOrFail($id);
-        return view('inventory.items.edit', compact('item'));
+        try {
+            $item = Item::find($id);
+            if (!$item) {
+                return $this->errorResponse("Item not found.", [], 201);
+            }
+            DB::transaction(function () use ($item) {
+                $item->delete();
+            });
+            return $this->successResponse("Item successfully deleted.");
+        } catch (\Exception $e) {
+            return $this->errorResponse("Error encountered while deleting item.", $e->getMessage(), 201);
+        }
     }
 
-    /**
-     * Update the specified item in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int                       $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function update(Request $request, $id)
-    {
-        $item = Item::findOrFail($id);
-
-        $validated = $request->validate([
-            'name'          => 'required',
-            'description'   => 'sometimes',
-            'categoryID'    => 'sometimes|exists:tbl_iv_categories,sn',
-            'unitID'        => 'sometimes|exists:tbl_iv_units,sn',
-            'status'        => 'sometimes|in:active,inactive',
-            'cost_price'    => 'sometimes|numeric',
-            'selling_price' => 'sometimes|numeric',
-            'barcode'       => 'sometimes',
-            'reorder_level' => 'sometimes|numeric',
-        ]);
-
-        $item->update($validated);
-
-        return redirect()
-            ->route('inventory.items.index')
-            ->with('success', 'Item updated successfully.');
-    }
-
-    /**
-     * Remove the specified item from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function destroy($id)
-    {
-        $item = Item::findOrFail($id);
-        $item->delete();
-
-        return redirect()
-            ->route('inventory.items.index')
-            ->with('success', 'Item deleted successfully.');
-    }
 
     public function showBulkUpload()
     {

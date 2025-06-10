@@ -8,25 +8,34 @@ use App\Models\CustomerSavingsPlan;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
 
     public function index()
     {
-        try {
-            $customers = Customer::all();
-            return $this->successResponse("Customers retrieved successfully.", $customers);
-        } catch (\Exception $e) {
-            return $this->errorResponse("Error retrieving customers.", $e->getMessage(), 201);
-        }
+
+        $merchant_id = Auth::user()->accountID;
+
+        $customers = Customer::where("merchantID", $merchant_id)->get();
+
+        return view('customers.index', compact('customers'));
+
+    }
+
+    // Show the form for creating a new resource.
+    public function create()
+    {
+        $status_list =  $this->loadStatusIntoCombo();
+
+        return view('customers.create', compact('status_list'));
     }
 
     public function store(Request $request)
     {
         $data  = $request->all();
         $rules = [
-            'customer_id' => ['required', 'unique:tbl_iv_customers,customer_id'],
             'merchantID'  => ['required'],
             'name'        => ['required'],
             'contact_person' => ['sometimes'],
@@ -40,6 +49,11 @@ class CustomerController extends Controller
 
         if ($validation->fails()) {
             return $this->errorResponse("Kindly fill in all required fields.", ['errors' => $validation->errors()], 201);
+        }
+
+        // if user didn't supply one, generate it
+        if (empty($data['customer_id'])) {
+            $data['customer_id'] = $this->generateUniqueId("CUS", 8);
         }
 
         try {
@@ -73,6 +87,16 @@ class CustomerController extends Controller
         } catch (\Exception $e) {
             return $this->errorResponse("Error retrieving customer.", $e->getMessage(), 201);
         }
+    }
+
+    public function edit($id)
+    {
+        // Fetch the item (or 404)
+        $customer = Customer::findOrFail($id);
+
+        $status_list =  $this->loadStatusIntoCombo($customer->status);
+
+        return view('customers.edit', compact('customer', 'status_list'));
     }
 
     public function update(Request $request, $id)
@@ -282,11 +306,6 @@ class CustomerController extends Controller
         );
     }
 
-    // Show the form for creating a new resource.
-    public function create()
-    {
-        return view('customers.create');
-    }
 
     // Store a newly created resource in storage.
     public function store1(Request $request)
