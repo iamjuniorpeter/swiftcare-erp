@@ -7,15 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 class Warehouse extends Model
 {
     protected $table = 'tbl_iv_warehouses';
-    protected $primaryKey = 'sn';
-    public $incrementing = true;
+    protected $primaryKey = 'warehouse_id';
+    public $incrementing = false;
 
-    protected $fillable = ['warehouse_id', 'merchantID', 'name', 'location', 'contact_person', 'phone', 'email'];
+    protected $fillable = ['warehouse_id', 'merchantID', 'name', 'typeID', 'location', 'contact_person', 'phone', 'email'];
 
     // A warehouse has many inventory records.
     public function inventories()
     {
         return $this->hasMany(Inventory::class, 'warehouseID', 'sn');
+    }
+
+    // And many transaction logs.
+    public function warehouseType()
+    {
+        return $this->belongsTo(WarehouseType::class, 'typeID', 'sn');
     }
 
     // And many transaction logs.

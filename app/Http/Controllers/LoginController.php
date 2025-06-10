@@ -405,10 +405,13 @@ class LoginController extends Controller
     {
         $merchant_id = Auth::user()->accountID;
 
-        $categories = Category::where("merchantID", $merchant_id)->get();
-        $units      = Unit::where("merchantID", $merchant_id)->get();
-        $locations      = Warehouse::where("merchantID", $merchant_id)->get();
-        return view('items.create', compact('categories', 'units', 'locations'));
+        $category_list = $this->loadCategoryIntoCombo();
+        $sub_category_list = $this->loadSubCategoryIntoCombo();
+        $unit_list =  $this->loadUnitsIntoCombo();
+        $location_list =  $this->loadWarehousesIntoCombo();
+        $status_list =  $this->loadStatusIntoCombo();
+
+        return view('items.create', compact('category_list', 'sub_category_list', 'unit_list', 'location_list', 'status_list'));
     }
 
     public function ItemStore(Request $request)
@@ -421,6 +424,7 @@ class LoginController extends Controller
             'name'         => ['required'],
             'description'  => ['sometimes'],
             'categoryID'   => ['sometimes'],
+            'subCategoryID'   => ['sometimes'],
             'unitID'       => ['sometimes'],
             'status'       => ['sometimes'],
             'cost_price'   => ['sometimes', 'numeric'],
@@ -454,6 +458,7 @@ class LoginController extends Controller
                     'name'          => $data['name'],
                     'description'   => $data['description'] ?? null,
                     'categoryID'    => $data['categoryID'] ?? null,
+                    'subCategoryID'    => $data['subCategoryID'] ?? null,
                     'unitID'        => $data['unitID'] ?? null,
                     'status'        => $data['status'] ?? 'active',
                     'cost_price'    => $data['cost_price'] ?? 0,
@@ -489,6 +494,7 @@ class LoginController extends Controller
             'name'         => ['required'],
             'description'  => ['sometimes'],
             'categoryID'   => ['sometimes'],
+            'subCategoryID'   => ['sometimes'],
             'unitID'       => ['sometimes'],
             'status'       => ['sometimes'],
             'cost_price'   => ['sometimes', 'numeric'],
@@ -513,6 +519,7 @@ class LoginController extends Controller
                     'name'          => $data['name'],
                     'description'   => $data['description'] ?? $item->description,
                     'categoryID'    => $data['categoryID'] ?? $item->categoryID,
+                    'subCategoryID'    => $data['subCategoryID'] ?? $item->subCategoryID,
                     'unitID'        => $data['unitID'] ?? $item->unitID,
                     'status'        => $data['status'] ?? $item->status,
                     'cost_price'    => $data['cost_price'] ?? $item->cost_price,
@@ -532,13 +539,16 @@ class LoginController extends Controller
     {
         // Fetch the item (or 404)
         $item = Item::findOrFail($id);
+        $merchant_id = Auth::user()->accountID;
 
-        // Lookup lists for dropdowns
-        $categories = Category::all();
-        $units      = Unit::all();
+        $category_list = $this->loadCategoryIntoCombo($item->categoryID);
+        $sub_category_list = $this->loadSubCategoryIntoCombo($item->subCategoryID);
+        $unit_list =  $this->loadUnitsIntoCombo($item->unitID);
+        $location_list =  $this->loadWarehousesIntoCombo($item->warehouseID);
+        $status_list =  $this->loadStatusIntoCombo($item->status);
 
-        // Return the edit view with data
-        return view('items.edit', compact('item', 'categories', 'units'));
+        return view('items.edit', compact('item', 'category_list', 'sub_category_list', 'unit_list', 'location_list', 'status_list'));
+
     }
 
     public function ItemDestroy($id)

@@ -18,6 +18,12 @@ class Category extends Model
         return $this->hasMany(Item::class, 'categoryID', 'sn');
     }
 
+    // A category has many sub categories
+    public function subcategory()
+    {
+        return $this->hasMany(SubCategory::class, 'categoryID', 'sn');
+    }
+
     // A category belongs to a merchant
     public function merchant()
     {

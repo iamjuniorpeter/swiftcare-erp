@@ -48,21 +48,31 @@
                             </div>
 
                             {{-- Category --}}
-                        <div class="col-md-4 mb-3">
+                            <div class="col-md-3 mb-3">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <label for="categoryID" class="form-label mb-2">Category</label>
                                     <a href="javascript:void(0)" class="text-end text-info text-bold" id="labelAddCategory">Add Category</a>
                                 </div>
                                 <select id="categoryID"
                                         name="categoryID"
-                                        class="form-select @error('categoryID') is-invalid @enderror form-control cmbSelect2">
-                                    <option value="">-- choose category --</option>
-                                    @foreach($categories as $cat)
-                                        <option value="{{ $cat->sn }}"
-                                            {{ old('categoryID') == $cat->sn ? 'selected' : '' }}>
-                                            {{ $cat->name }}
-                                        </option>
-                                    @endforeach
+                                        class="form-select form-control cmbSelect2 categoryIDMain">
+                                    {!! $category_list !!}
+                                </select>
+                                @error('categoryID')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- Sub Category --}}
+                            <div class="col-md-3 mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label for="categoryID" class="form-label mb-2">Sub Category</label>
+                                    <a href="javascript:void(0)" class="text-end text-info text-bold" id="labelAddSubCategory">Add Sub Category</a>
+                                </div>
+                                <select id="subCategoryID"
+                                        name="subCategoryID"
+                                        class="form-select form-control cmbSelect">
+                                    {!! $sub_category_list !!}
                                 </select>
                                 @error('categoryID')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -71,7 +81,7 @@
 
 
                             {{-- Unit --}}
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-3 mb-3">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <label for="unitID" class="form-label mb-2">Unit</label>
                                     <a href="javascript:void(0)" class="text-end text-info text-bold" id="labelAddUnit">Add Unit</a>
@@ -79,13 +89,7 @@
                                 <select id="unitID"
                                         name="unitID"
                                         class="form-select @error('unitID') is-invalid @enderror form-control cmbSelect2">
-                                    <option value="">-- choose unit --</option>
-                                    @foreach($units as $unit)
-                                        <option value="{{ $unit->sn }}"
-                                            {{ old('unitID') == $unit->sn ? 'selected' : '' }}>
-                                            {{ $unit->unit_name }}
-                                        </option>
-                                    @endforeach
+                                    {!! $unit_list !!}
                                 </select>
                                 @error('unitID')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -93,13 +97,12 @@
                             </div>
 
                             {{-- Status --}}
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-3 mb-3">
                                 <label for="status" class="form-label">Status</label>
                                 <select id="status"
                                         name="status"
                                         class="form-select @error('status') is-invalid @enderror form-control cmbSelect2">
-                                    <option value="active" {{ old('status')=='active'? 'selected':'' }}>Active</option>
-                                    <option value="inactive" {{ old('status')=='inactive'? 'selected':'' }}>Inactive</option>
+                                    {!! $status_list !!}
                                 </select>
                                 @error('status')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -157,13 +160,7 @@
                                 <select id="location"
                                         name="location"
                                         class="form-select @error('location') is-invalid @enderror form-control cmbSelect2">
-                                    <option value="">-- choose location --</option>
-                                    @foreach($locations as $location)
-                                        <option value="{{ $location->warehouse_id }}"
-                                            {{ old('unitID') == $location->warehouse_id ? 'selected' : '' }}>
-                                            {{ $location->name }}
-                                        </option>
-                                    @endforeach
+                                    {!! $location_list !!}
                                 </select>
                                 @error('unitID')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -187,6 +184,10 @@
     </div>
 
     <x-modal-add-new-category />
+    <x-modal-add-new-sub-category 
+        :categoryList="$category_list" 
+        :statusList="$status_list"
+    />
     <x-modal-add-new-unit />
     <x-modal-add-new-warehouse />
 
@@ -195,12 +196,16 @@
         <script src="{{ asset('@assets/plugins/bootstrap-select/bootstrap-select.min.js') }}"></script>
         <script>
             applySelect2([".cmbSelect2"]);
+            applySelect2OnModal(".cmbSelect2", "#addNewSubCategoryModal");
             saveCategory();
+            saveSubCategory();
+            getSubCategoryByCategory();
             saveUnit();
             saveItem();
             saveWarehouse();
             showModal("#labelAddUnit", "#addNewUnitModal");
             showModal("#labelAddCategory", "#addNewCategoryModal");
+            showModal("#labelAddSubCategory", "#addNewSubCategoryModal");
             showModal("#labelAddLocation", "#addNewLocationModal");
         </script>
     </x-slot>

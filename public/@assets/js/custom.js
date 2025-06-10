@@ -2021,6 +2021,68 @@ function saveCategory() {
     }
 }
 
+function saveSubCategory() {
+    if ($("#btnSaveSubCategory")) {
+        $(document).on("click submit", "#btnSaveSubCategory", function(e) {
+            e.preventDefault();
+
+            var btn = $(this);
+            var frm = $("#frmSaveSubCategory");
+            var loader = $("#frmAddHcpPaymentLoader");
+
+            var formAction = frm.attr("action");
+            var formMethod = frm.attr("method");
+            var formData = frm.serialize();
+
+            //btn.hide();
+            loader.show();
+
+            swal({
+                title: "Do you want to proceed with this request?",
+                text: "You won't be able to revert this!",
+                showCancelButton: true,
+                confirmButtonText: "Yes, Proceed",
+                padding: "2em",
+            }).then(function(result) {
+                if (result.value) {
+                    $.ajax({
+                        url: formAction,
+                        headers: {
+                            "X-CSRF-Token": $('input[name="_token"]').val(),
+                        },
+                        type: formMethod,
+                        data: formData,
+                        dataType: "JSON",
+                        success: function(response) {
+                            //console.log(response);
+                            if (response.status.trim() == "success") {
+                                showSnackBar(response.message, "success");
+
+                                frm[0].reset();
+                                btn.show();
+                                loader.hide();
+
+                                location.reload();
+                            } else {
+                                btn.show();
+                                loader.hide();
+
+                                handleErrors(response);
+                            }
+                        },
+                        error: function(x, e) {
+                            btn.show();
+                            loader.hide();
+
+                            handleErrors(formatErrorMessage(x, e));
+                        },
+                    });
+                }
+            });
+        });
+    }
+}
+
 function saveUnit() {
     if ($("#btnSaveUnit")) {
         $(document).on("click submit", "#btnSaveUnit", function(e) {
@@ -2090,6 +2152,68 @@ function saveWarehouse() {
 
             var btn = $(this);
             var frm = $("#frmSaveWarehouse");
+            var loader = $("#frmAddHcpPaymentLoader");
+
+            var formAction = frm.attr("action");
+            var formMethod = frm.attr("method");
+            var formData = frm.serialize();
+
+            //btn.hide();
+            loader.show();
+
+            swal({
+                title: "Do you want to proceed with this request?",
+                text: "You won't be able to revert this!",
+                showCancelButton: true,
+                confirmButtonText: "Yes, Proceed",
+                padding: "2em",
+            }).then(function(result) {
+                if (result.value) {
+                    $.ajax({
+                        url: formAction,
+                        headers: {
+                            "X-CSRF-Token": $('input[name="_token"]').val(),
+                        },
+                        type: formMethod,
+                        data: formData,
+                        dataType: "JSON",
+                        success: function(response) {
+                            //console.log(response);
+                            if (response.status.trim() == "success") {
+                                showSnackBar(response.message, "success");
+
+                                frm[0].reset();
+                                btn.show();
+                                loader.hide();
+
+                                location.reload();
+                            } else {
+                                btn.show();
+                                loader.hide();
+
+                                handleErrors(response);
+                            }
+                        },
+                        error: function(x, e) {
+                            btn.show();
+                            loader.hide();
+
+                            handleErrors(formatErrorMessage(x, e));
+                        },
+                    });
+                }
+            });
+        });
+    }
+}
+
+function saveWarehouseType() {
+    if ($("#btnSaveWarehouseType")) {
+        $(document).on("click submit", "#btnSaveWarehouseType", function(e) {
+            e.preventDefault();
+
+            var btn = $(this);
+            var frm = $("#frmSaveWarehouseType");
             var loader = $("#frmAddHcpPaymentLoader");
 
             var formAction = frm.attr("action");
@@ -2329,4 +2453,37 @@ function savePurchaseOrderItem() {
             });
         });
     }
+}
+
+function getSubCategoryByCategory(){
+
+    $(document).on('change', '.categoryIDMain', function (e) {
+        e.preventDefault();
+        let categoryID = $(this).val();
+        let $subCategory = $('#subCategoryID');
+
+        $subCategory.html('<option value="">Loading...</option>');
+
+        if (categoryID) {
+            $.ajax({
+                url: '/get-sub-categories/' + categoryID,
+                type: 'GET',
+                success: function (data) {
+                    let options = '<option value="">-- Select Sub Category --</option>';
+                    data.forEach(function (subCat) {
+                        options += `<option value="${subCat.sn}">${subCat.name}</option>`;
+                    });
+                    $subCategory.html(options);
+                    applySelect2([".subCategoryID"]);
+                },
+                error: function () {
+                    $subCategory.html('<option value="-1">Error loading sub-categories</option>');
+                }
+            });
+        } else {
+            $subCategory.html('<option value="-1">-- No Data Available --</option>');
+        }
+    });
+
+    $('.categoryIDMain').trigger('change');
 }

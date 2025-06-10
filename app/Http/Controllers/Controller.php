@@ -12,6 +12,8 @@ use App\Http\Controllers\ModelController\TransactionModeController;
 use App\Http\Controllers\ModelController\TransactionTypeController;
 use App\Http\Controllers\ModelController\ZoneController;
 use App\Models\ItemBatch;
+use App\Models\Category;
+use App\Models\Warehouse;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -20,6 +22,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Validator;
 use Ramsey\Uuid\Uuid;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 use function PHPUnit\Framework\isNull;
@@ -541,6 +544,143 @@ class Controller extends BaseController
                 $cmb_list .= "<option value='" . $savings_plan->sn . "' selected='selected'>  " . $savings_plan->plan_name . "  (NGN " . formatAmount($savings_plan->amount) . ")</option>";
             } else {
                 $cmb_list .= "<option value='" . $savings_plan->sn . "'> " . $savings_plan->plan_name . "  (NGN " . formatAmount($savings_plan->amount) . ") </option>";
+            }
+        }
+
+        return $cmb_list;
+    }
+
+    public function loadCategoryIntoCombo($param_cat = "")
+    {
+        $merchant_id = Auth::user()->accountID;
+        $category_list = Category::where(function ($query) use ($merchant_id) {
+            $query->where('merchantID', $merchant_id)
+                  ->orWhereNull('merchantID')
+                  ->orWhere('merchantID', '');
+        })->get();
+
+        if (count($category_list) < 1) {
+            return "<option value='-1'>No Data Available</option>";
+        }
+
+        $cmb_list = "<option value='-1'>Select Category</option>";
+
+        foreach ($category_list as $category) {
+            if ($category->sn == $param_cat) {
+                $cmb_list .= "<option value='" . $category->sn . "' selected='selected'>" . $category->name . " </option>";
+            } else {
+                $cmb_list .= "<option value='" . $category->sn . "'>" . $category->name . " </option>";
+            }
+        }
+
+        return $cmb_list;
+    }
+
+    public function loadSubCategoryIntoCombo($category_id = "", $param_cat = "")
+    {
+        if ($category_id == "") {
+            return "<option value='-1'>No Data Available</option>";
+        }
+
+        $merchant_id = Auth::user()->accountID;
+        $category_list = SubCategory::where(function ($query) use ($merchant_id) {
+            $query->where('merchantID', $merchant_id)
+                  ->orWhereNull('merchantID')
+                  ->orWhere('merchantID', '');
+        })
+        ->where('categoryID', $category_id)
+        ->get();
+
+        if (count($category_list) < 1) {
+            return "<option value='-1'>No Data Available</option>";
+        }
+
+        $cmb_list = "<option value='-1'>Select Sub Category</option>";
+
+        foreach ($category_list as $category) {
+            if ($category->sn == $param_cat) {
+                $cmb_list .= "<option value='" . $category->sn . "' selected='selected'>" . $category->name . " </option>";
+            } else {
+                $cmb_list .= "<option value='" . $category->sn . "'>" . $category->name . " </option>";
+            }
+        }
+
+        return $cmb_list;
+    }
+
+    public function loadWarehousesIntoCombo($param_cat = "")
+    {
+        $merchant_id = Auth::user()->accountID;
+        $warehouse_list = Warehouse::where(function ($query) use ($merchant_id) {
+            $query->where('merchantID', $merchant_id)
+                  ->orWhereNull('merchantID')
+                  ->orWhere('merchantID', '');
+        })
+        ->get();
+
+        if (count($warehouse_list) < 1) {
+            return "<option value='-1'>No Data Available</option>";
+        }
+
+        $cmb_list = "<option value='-1'>Select Location</option>";
+
+        foreach ($warehouse_list as $warehouse) {
+            if ($warehouse->warehouse_id == $param_cat) {
+                $cmb_list .= "<option value='" . $warehouse->warehouse_id . "' selected='selected'>" . $warehouse->name . " </option>";
+            } else {
+                $cmb_list .= "<option value='" . $warehouse->warehouse_id . "'>" . $warehouse->name . " </option>";
+            }
+        }
+
+        return $cmb_list;
+    }
+
+    public function loadUnitsIntoCombo($param_cat = "")
+    {
+        $merchant_id = Auth::user()->accountID;
+        $unit_list = Warehouse::where(function ($query) use ($merchant_id) {
+            $query->where('merchantID', $merchant_id)
+                  ->orWhereNull('merchantID')
+                  ->orWhere('merchantID', '');
+        })
+        ->get();
+
+        if (count($unit_list) < 1) {
+            return "<option value='-1'>No Data Available</option>";
+        }
+
+        $cmb_list = "<option value='-1'>Select Unit</option>";
+
+        foreach ($unit_list as $unit) {
+            if ($unit->sn == $param_cat) {
+                $cmb_list .= "<option value='" . $unit->sn . "' selected='selected'>" . $unit->unit_name . " </option>";
+            } else {
+                $cmb_list .= "<option value='" . $unit->sn . "'>" . $unit->unit_name . " </option>";
+            }
+        }
+
+        return $cmb_list;
+    }
+
+    public function loadStatusIntoCombo($param_cat = "")
+    {
+        $list =  [
+            ["name" => "active"],
+            ["name" => "inactive"]
+        ];
+
+        // Convert the array of associative arrays to an array of objects
+        $list_of_objects = array_map(function ($item) {
+            return (object)$item;
+        }, $list);
+
+        $cmb_list = "<option value='-1'>Select Status</option>";
+
+        foreach ($list_of_objects as $status) {
+            if (strtolower($status->name) == strtolower($param_cat)) {
+                $cmb_list .= "<option value='" . $status->name . "' selected='selected'>" . ucwords($status->name) . " </option>";
+            } else {
+                $cmb_list .= "<option value='" . $status->name . "'>" . ucwords($status->name) . " </option>";
             }
         }
 

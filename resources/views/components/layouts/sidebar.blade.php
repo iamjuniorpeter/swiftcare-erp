@@ -74,10 +74,13 @@ $account_category = $logged_in_user->accountCategory->code;
                         <a href="{{ route('items.create') }}"> Products / Items </a>
                     </li>
                     <li>
-                        <a href="{{ route('customer.view', 'all') }}"> Locations </a>
+                        <a href="{{ route('warehouses.create') }}"> Locations </a>
                     </li>
                     <li>
                         <a href="{{ route('categories.create') }}"> Categories </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('sub-categories.create') }}"> Sub Categories </a>
                     </li>
                     <li>
                         <a href="{{ route('units.create') }}"> Units </a>

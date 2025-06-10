@@ -5,12 +5,23 @@ namespace App\Http\Controllers\ModelController;
 use App\Http\Controllers\Controller;
 
 use App\Models\Warehouse;
+use App\Models\WarehouseType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class WarehouseController extends Controller
 {
+    public function create()
+    {
+        $merchant_id = Auth::user()->accountID;
+
+        $warehouses = Warehouse::where("merchantID", $merchant_id)->with(['warehouseType'])->get();
+        $warehouse_types = WarehouseType::where("merchantID", $merchant_id)->get();
+
+        return view('warehouses.create', compact('warehouses', 'warehouse_types'));
+    }
+
     public function index()
     {
         $merchant_id = Auth::user()->accountID;
@@ -30,6 +41,7 @@ class WarehouseController extends Controller
             //'warehouse_id' => ['required', 'unique:tbl_iv_warehouses,warehouse_id'],
             'merchantID'   => ['required'],
             'name'         => ['required'],
+            'type'         => ['required'],
             'location'     => ['sometimes'],
             'contact_person' => ['sometimes'],
             'phone'        => ['sometimes'],
@@ -52,6 +64,7 @@ class WarehouseController extends Controller
                     'warehouse_id' => $data['warehouse_id'],
                     'merchantID'   => $data['merchantID'],
                     'name'         => ucwords($data['name']),
+                    'typeID'         => $data['type'],
                     'location'     => $data['location'] ?? null,
                     'contact_person' => $data['contact_person'] ?? null,
                     'phone'        => $data['phone'] ?? null,
@@ -62,6 +75,36 @@ class WarehouseController extends Controller
             return $result;
         } catch (\Exception $e) {
             return $this->errorResponse("Error encountered while creating warehouse.", $e->getMessage(), 201);
+        }
+    }
+
+    public function storeType(Request $request)
+    {
+        $data  = $request->all();
+        $rules = [
+            //'warehouse_id' => ['required', 'unique:tbl_iv_warehouses,warehouse_id'],
+            'merchantID'   => ['required'],
+            'name'         => ['required'],
+            'code'     => ['required'],
+        ];
+
+        $validation = $this->validateData($data, $rules);
+        if ($validation->fails()) {
+            return $this->errorResponse("Kindly fill in all required fields.", ['errors' => $validation->errors()], 201);
+        }
+
+        try {
+            $result = DB::transaction(function () use ($data) {
+                $warehouse = WarehouseType::create([
+                    'merchantID'   => $data['merchantID'],
+                    'name'         => ucwords($data['name']),
+                    'code'     => $data['code'] ?? null,
+                ]);
+                return $this->successResponse("Warehouse Type successfully created.", $warehouse);
+            });
+            return $result;
+        } catch (\Exception $e) {
+            return $this->errorResponse("Error encountered while creating warehouse type.", $e->getMessage(), 201);
         }
     }
 
@@ -76,6 +119,15 @@ class WarehouseController extends Controller
         } catch (\Exception $e) {
             return $this->errorResponse("Error retrieving warehouse.", $e->getMessage(), 201);
         }
+    }
+
+    public function edit($id)
+    {
+        $merchant_id = Auth::user()->accountID;
+        $warehouse = Warehouse::findOrFail($id);
+        $warehouse_types = WarehouseType::where("merchantID", $merchant_id)->get();
+
+        return view('warehouses.edit', compact('warehouse', 'warehouse_types'));
     }
 
     public function update(Request $request, $id)

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\ModelController\CategoryController;
+use App\Http\Controllers\ModelController\SubCategoryController;
 use App\Http\Controllers\ModelController\CustomerController;
 use App\Http\Controllers\ModelController\InventoryController;
 use App\Http\Controllers\ModelController\ItemController;
@@ -88,6 +89,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
     Route::put('categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
     Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
+    // Sub Categories
+    Route::get('sub-categories', [SubCategoryController::class, 'index'])->name('sub-categories.index');
+    Route::get('/get-sub-categories/{category_id}', [SubCategoryController::class, 'getByCategory'])->name('sub-categories.by-category');
+    Route::get('sub-categories/create', [SubCategoryController::class, 'create'])->name('sub-categories.create');
+    Route::post('sub-categories', [SubCategoryController::class, 'store'])->name('sub-categories.store');
+    Route::get('sub-categories/{category}', [SubCategoryController::class, 'show'])->name('sub-categories.show');
+    Route::get('sub-categories/{category}/edit', [SubCategoryController::class, 'edit'])->name('sub-categories.edit');
+    Route::put('sub-categories/{category}', [SubCategoryController::class, 'update'])->name('sub-categories.update');
+    Route::delete('sub-categories/{category}', [SubCategoryController::class, 'destroy'])->name('sub-categories.destroy');
 
     // Customers
     Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
@@ -194,6 +205,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('warehouses/{warehouse}/edit', [WarehouseController::class, 'edit'])->name('warehouses.edit');
     Route::put('warehouses/{warehouse}', [WarehouseController::class, 'update'])->name('warehouses.update');
     Route::delete('warehouses/{warehouse}', [WarehouseController::class, 'destroy'])->name('warehouses.destroy');
+    //types
+    Route::post('warehouse/type', [WarehouseController::class, 'storeType'])->name('warehouse-type.store');
 
     // Invoices
     Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices.index');
