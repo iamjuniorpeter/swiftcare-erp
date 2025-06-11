@@ -10,17 +10,26 @@ class Customer extends Model
     use HasFactory;
     
     // Define the table name
-    protected $table = 'tbl_customer';
+    protected $table = 'tbl_iv_customers';
 
     // Define the primary key column name
-    protected $primaryKey = 'sn';
+    protected $primaryKey = 'customer_id';
+    public $incrementing = false;
 
     // Define mass-assignable columns
     protected $fillable = [
+        'merchantID',
+        'customer_id',
+        'name',
+        'email',
+        'phone',
+        'address',
+        'contact_person',
+        'status',
+
         'account_id',
         'account_no',
         'old_account_no',
-        'surname',
         'other_names',
         'gender',
         'marital_status',

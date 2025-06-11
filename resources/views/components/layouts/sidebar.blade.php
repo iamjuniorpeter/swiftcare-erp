@@ -110,6 +110,9 @@ $account_category = $logged_in_user->accountCategory->code;
                     <li>
                         <a href="#" class="contact-admin"> Rentals </a>
                     </li>
+                    <li>
+                        <a href="{{ route('customers.create') }}"> Customers </a>
+                    </li>
                 </ul>
             </li>
 

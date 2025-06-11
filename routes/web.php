@@ -125,13 +125,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('items/bulk-upload', [ItemController::class, 'processBulkUpload'])->name('items.bulk_upload.store');
     Route::get('items/bulk-upload-template', [ItemController::class, 'downloadBulkUploadTemplate'])->name('items.bulk_upload.template');
 
-    Route::get('items', [LoginController::class, 'ItemIndex'])->name('items.index');
-    Route::get('items/create', [LoginController::class, 'ItemCreate'])->name('items.create');
-    Route::post('items', [LoginController::class, 'ItemStore'])->name('items.store');
-    Route::get('items/{item}', [LoginController::class, 'ItemShow'])->name('items.show');
-    Route::get('items/{item}/edit', [LoginController::class, 'ItemEdit'])->name('items.edit');
-    Route::put('items/{item}', [LoginController::class, 'ItemUpdate'])->name('items.update');
-    Route::delete('items/{item}', [LoginController::class, 'ItemDestroy'])->name('items.destroy');
+    Route::get('items', [ItemController::class, 'ItemIndex'])->name('items.index');
+    Route::get('items/create', [ItemController::class, 'ItemCreate'])->name('items.create');
+    Route::post('items', [ItemController::class, 'ItemStore'])->name('items.store');
+    Route::get('items/{item}', [ItemController::class, 'ItemShow'])->name('items.show');
+    Route::get('items/{item}/edit', [ItemController::class, 'ItemEdit'])->name('items.edit');
+    Route::put('items/{item}', [ItemController::class, 'ItemUpdate'])->name('items.update');
+    Route::delete('items/{item}', [ItemController::class, 'ItemDestroy'])->name('items.destroy');
 
 
     // Purchase Orders
