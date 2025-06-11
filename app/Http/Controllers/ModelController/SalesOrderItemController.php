@@ -67,73 +67,149 @@ class SalesOrderItemController extends Controller
         }
     }
 
+    // public function store(Request $request)
+    // {
+    //     DB::beginTransaction();
+
+    //     try {
+
+    //         $salesOrder = SalesOrderItem::create([
+
+    //             'merchantID' => auth()->user()->accountID,
+    //             'quantity' => $request->qty,
+    //             'itemID' => $request->itemID,
+    //             'customer_name' => $request->cust_name,
+    //             'customer_email' => $request->cust_email,
+    //         ]);
+
+    //         foreach ($request->itemID as $item) {
+    //             $remaining = $item['quantity'];
+
+    //             $batches = ItemBatch::where('itemID', $item['itemID'])
+    //                 ->where('quantity', '>', 0)
+    //                 ->orderBy('created_at', 'asc')
+    //                 ->get();
+
+    //             foreach ($batches as $batch) {
+    //                 if ($remaining <= 0) {
+    //                     break;
+    //                 }
+
+    //                 $deduct = min($remaining, $batch->quantity);
+    //                 $batch->quantity -= $deduct;
+    //                 $batch->save();
+
+    //                 DB::table('tbl_iv_sale_order_item_activity')->insert([
+    //                     'merchantID' => auth()->user()->accountID,
+    //                     'itemID' => $item['itemID'],
+    //                     'item_batch' => $batch->batch_number,
+    //                     'activity_type' => 'Stock Out',
+    //                     'quantity' => $deduct,
+    //                     'unit_price' => $item['unit_price'],
+    //                 ]);
+
+    //                 $remaining -= $deduct;
+    //             }
+
+    //             if ($remaining > 0) {
+    //                 throw new \Exception(
+    //                     'Insufficient stock for item ID: ' . $item['itemID']
+    //                 );
+    //             }
+    //         }
+
+    //         DB::commit();
+
+    //         // return response()->json(
+    //         //     ['message' => 'Sales order recorded successfully.'],
+    //         //     201
+    //         // );
+    //         return $this->successResponse("Sales order item successfully created.", $item);
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         //return response()->json(['error' => $e->getMessage()], 500);
+    //         return $this->errorResponse("Error encountered while creating sales order item.", $e->getMessage(), 201);
+
+    //     }
+
+    //     //return $this->successResponse("Sales order item successfully created.", $item);
+
+    //     //return $this->errorResponse("Error encountered while creating sales order item.", $e->getMessage(), 201);
+    // }
+
     public function store(Request $request)
     {
         DB::beginTransaction();
 
         try {
+            $merchantID = auth()->user()->accountID;
 
-            $salesOrder = SalesOrderItem::create([
-                'merchantID' => auth()->user()->accountID,
-                'customer_name' => $request->cust_name,
-                'customer_email' => $request->cust_email,
-                'quantity' => $request->qty,
+            $item = [
                 'itemID' => $request->itemID,
-            ]);
+                'quantity' => $request->qty,
+                'unit_price' => $request->unit_price,
+            ];
 
-            foreach ($request->items as $item) {
-                $remaining = $item['quantity'];
+            $remaining = $item['quantity'];
 
-                $batches = ItemBatch::where('itemID', $item['itemID'])
-                    ->where('quantity', '>', 0)
-                    ->orderBy('created_at', 'asc')
-                    ->get();
+            $batches = ItemBatch::where('itemID', $item['itemID'])
+                ->where('quantity', '>', 0)
+                ->orderBy('created_at', 'asc')
+                ->get();
 
-                foreach ($batches as $batch) {
-                    if ($remaining <= 0) {
-                        break;
-                    }
-
-                    $deduct = min($remaining, $batch->quantity);
-                    $batch->quantity -= $deduct;
-                    $batch->save();
-
-                    DB::table('tbl_iv_sale_order_item_activity')->insert([
-                        'merchantID' => auth()->user()->accountID,
-                        'itemID' => $item['itemID'],
-                        'item_batch' => $batch->batch_number,
-                        'activity_type' => 'Stock Out',
-                        'quantity' => $deduct,
-                        'unit_price' => $item['unit_price'],
-                    ]);
-
-                    $remaining -= $deduct;
+            foreach ($batches as $batch) {
+                if ($remaining <= 0) {
+                    break;
                 }
 
-                if ($remaining > 0) {
-                    throw new \Exception(
-                        'Insufficient stock for item ID: ' . $item['itemID']
-                    );
-                }
+                $deduct = min($remaining, $batch->quantity);
+                $batch->quantity -= $deduct;
+                $batch->save();
+
+                DB::table('tbl_iv_sales_order_items')->insert([
+                    'soi_id' => uniqid('SOI_'),
+                    'merchantID' => $merchantID,
+                    'itemID' => $item['itemID'],
+                    'batchID' => $batch->batch_number,
+                    'quantity' => $deduct,
+                    'unit_price' => $item['unit_price'],
+                    'customer_name' => $request->cust_name,
+                    'customer_email' => $request->cust_email,
+                    'created_at' => now(),
+                ]);
+
+                DB::table('tbl_iv_sale_order_item_activity')->insert([
+                    'merchantID' => $merchantID,
+                    'itemID' => $item['itemID'],
+                    'item_batch' => $batch->batch_number,
+                    'activity_type' => 'Stock Out',
+                    'quantity' => $deduct,
+                    'unit_price' => $item['unit_price'],
+                    'created_at' => now(),
+                ]);
+
+                $remaining -= $deduct;
+            }
+
+            if ($remaining > 0) {
+                throw new \Exception(
+                    'Insufficient stock for item ID: ' . $item['itemID']
+                );
             }
 
             DB::commit();
 
-            // return response()->json(
-            //     ['message' => 'Sales order recorded successfully.'],
-            //     201
-            // );
-            return $this->successResponse("Sales order item successfully created.", $item);
+            return $this->successResponse(
+                'Sales order items successfully created.'
+            );
         } catch (\Exception $e) {
             DB::rollBack();
-            //return response()->json(['error' => $e->getMessage()], 500);
-            return $this->errorResponse("Error encountered while creating sales order item.", $e->getMessage(), 201);
-
+            return $this->errorResponse(
+                'Error creating sales order item.',
+                $e->getMessage(),
+                500
+            );
         }
-
-        //return $this->successResponse("Sales order item successfully created.", $item);
-
-        //return $this->errorResponse("Error encountered while creating sales order item.", $e->getMessage(), 201);
     }
 
     public function show($id)

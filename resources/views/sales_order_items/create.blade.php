@@ -1,7 +1,8 @@
 <x-layouts.master title="Add Sales Order Item" menutitle="Add Sales Order Item">
     <x-slot name="styles">
         <link rel="stylesheet" type="text/css" href="{{ asset('@assets/plugins/select2/select2.min.css') }}">
-        <link rel="stylesheet" type="text/css" href="{{ asset('@assets/plugins/bootstrap-select/bootstrap-select.min.css') }}">
+        <link rel="stylesheet" type="text/css"
+            href="{{ asset('@assets/plugins/bootstrap-select/bootstrap-select.min.css') }}">
     </x-slot>
     <div id="content" class="main-content">
         <div class="layout-px-spacing mt-5">
@@ -11,28 +12,21 @@
                         <h3 class="text-white">Add New Sales Order Item</h3>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('sales_order_items.store') }}" method="POST" name="frmSalesOrderItem" id="frmSalesOrderItem">
+                        <form action="{{ route('sales_order_items.store') }}" method="POST" name="frmSalesOrderItem"
+                            id="frmSalesOrderItem">
                             @csrf
                             <div class="form-group">
                                 <label for="name">Item</label>
-                                <select id="itemID"
-                                        name="itemID"
-                                        class="form-selec form-control cmbSelect2">
+                                <select id="itemID" name="itemID" class="form-selec form-control cmbSelect2">
 
-                                        {!! $optionsHtml !!}
+                                    {!! $optionsHtml !!}
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="qty">Quantity</label>
-                                <input type="number"
-                                    class="form-control"
-                                    id="qty"
-                                    name="qty"
-                                    min="0"
-                                    step="1"
-                                    pattern="\d*"
-                                    inputmode="numeric"
-                                    required />
+                                <input type="number" class="form-control" id="qty" name="qty" min="0"
+                                    step="1" pattern="\d*" inputmode="numeric"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" required />
                             </div>
 
                             <div class="form-group">
@@ -42,12 +36,14 @@
 
                             <div class="form-group">
                                 <label for="customer email">Customer Email</label>
-                                <input class="form-control" id="qty" type="text" name="qty" />
+                                <input class="form-control" id="cust_email" type="text" name="cust_email" />
                             </div>
 
-                            <input type="hidden" id="merchantID" name="merchantID" class="form-control" value="{{ Auth::user()->accountID }}">
+                            <input type="hidden" id="merchantID" name="merchantID" class="form-control"
+                                value="{{ Auth::user()->accountID }}">
                             <div class="text-right">
-                                <button type="submit" class="btn btn-lg btn-primary mt-3 btnSaveSalesItem" name="btnSaveSalesItem" id="btnSaveSalesItem">Save Sale</button>
+                                <button type="submit" class="btn btn-lg btn-primary mt-3 btnSaveSalesItem"
+                                    name="btnSaveSalesItem" id="btnSaveSalesItem">Save Sale</button>
                             </div>
 
                         </form>
