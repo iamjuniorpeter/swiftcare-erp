@@ -15,7 +15,7 @@ class CategoryController extends Controller
     {
         $merchant_id = Auth::user()->accountID;
 
-        $categories = Category::where("merchantID", $merchant_id)->get();
+        $categories = Category::get();
 
         return view('categories.create', compact('categories'));
     }
@@ -25,7 +25,7 @@ class CategoryController extends Controller
         $merchant_id = Auth::user()->accountID;
 
         try {
-            $categories = Category::where("merchantID", $merchant_id)->get();
+            $categories = Category::get();
             return $this->successResponse("Categories retrieved successfully.", $categories);
         } catch (\Exception $e) {
             return $this->errorResponse("Error retrieving categories.", $e->getMessage(), 201);
