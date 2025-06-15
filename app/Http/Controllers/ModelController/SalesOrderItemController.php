@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Item;
 use App\Models\ItemBatch;
 use App\Models\SalesOrderItem;
+use App\Models\Merchant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -52,20 +53,17 @@ class SalesOrderItemController extends Controller
 
     public function index()
     {
-        try {
-            $items = SalesOrderItem::all();
-            return $this->successResponse(
-                'Sales order items retrieved successfully.',
-                $items
-            );
-        } catch (\Exception $e) {
-            return $this->errorResponse(
-                'Error retrieving sales order items.',
-                $e->getMessage(),
-                201
-            );
-        }
+        $merchantID = Auth::user()->accountID;
+
+        $sales_order_items = SalesOrderItem::with('item')
+            ->where('merchantID', $merchantID)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+            //dd($sales_order_items);
+            return view('sales_order_items.index', compact('sales_order_items'));
     }
+
 
     public function store(Request $request)
     {
@@ -140,6 +138,20 @@ class SalesOrderItemController extends Controller
                 500
             );
         }
+    }
+
+    public function showInvoice($id)
+    {
+        $salesItem = SalesOrderItem::with([
+            'item',
+            'user.merchant'
+        ])->where('soi_id', $id)->first();
+
+
+        //dd($salesItem);
+
+        return view('sales_order_items.invoice', compact('salesItem'));
+
     }
 
     public function show($id)

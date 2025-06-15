@@ -6,6 +6,9 @@
     </x-slot>
     <div id="content" class="main-content">
         <div class="layout-px-spacing mt-5">
+            <div class="col-12 mt-3 mb-3 mt-3 pull-right" style="text-align:right">
+                <a href="{{ route('sales_order_items.index') }}" class="btn-lg btn btn-primary">All Sales Items</a>
+            </div>
             <div class="col-8 offset-2 mt-3 mb-3">
                 <div class="card mt-3">
                     <div class="card-header bg-primary">

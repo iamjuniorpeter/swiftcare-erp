@@ -164,11 +164,15 @@ Route::middleware(['auth'])->group(function () {
     // Sales Order Items
     Route::get('sales-order-items', [SalesOrderItemController::class, 'index'])->name('sales_order_items.index');
     Route::get('sales-order-items/create', [SalesOrderItemController::class, 'create'])->name('sales_order_items.create');
+    Route::get('/sales-order-items/invoice/{id}', [SalesOrderItemController::class, 'showInvoice'])->name('sales_order_items.invoice');
     Route::post('sales-order-items', [SalesOrderItemController::class, 'store'])->name('sales_order_items.store');
     Route::get('sales-order-items/{sales_order_item}', [SalesOrderItemController::class, 'show'])->name('sales_order_items.show');
     Route::get('sales-order-items/{sales_order_item}/edit', [SalesOrderItemController::class, 'edit'])->name('sales_order_items.edit');
     Route::put('sales-order-items/{sales_order_item}', [SalesOrderItemController::class, 'update'])->name('sales_order_items.update');
     Route::delete('sales-order-items/{sales_order_item}', [SalesOrderItemController::class, 'destroy'])->name('sales_order_items.destroy');
+
+    //emails
+    Route::get('/send-mail', 'App\Http\Controllers\ModelController\MailController@sendTestMail');
 
     // Suppliers
     Route::get('suppliers', [SupplierController::class, 'index'])->name('suppliers.index');

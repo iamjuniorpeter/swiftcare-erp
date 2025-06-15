@@ -23,4 +23,9 @@ class SalesOrderItem extends Model
     {
         return $this->belongsTo(Item::class, 'itemID', 'item_id');
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'merchantID', 'accountID');
+    }
+
 }

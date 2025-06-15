@@ -9,7 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
     use HasFactory;
-    
+
     // Define the table name
     protected $table = 'tbl_user';
 
@@ -22,6 +22,7 @@ class User extends Authenticatable
         'password',
         'accountID',
         'account_categoryID',
+        'merchantID',
         'account_typeID',
         'account_roleID',
         'created_at',
@@ -58,5 +59,10 @@ class User extends Authenticatable
         return $this->belongsTo(AccountCategory::class, 'account_categoryID', 'sn');
     }
 
-    
+    public function merchant()
+    {
+        return $this->belongsTo(Merchant::class, 'merchantID', 'merchant_id');
+    }
+
+
 }
