@@ -173,14 +173,16 @@ class ReportController extends Controller
                 ->get()
                 ->map(function ($item) {
                     $item->total_quantity_sold = $item->salesOrderItems->sum('quantity');
-                    $item->total_sales_value = $item->salesOrderItems->sum(function ($sale) {
-                        return $sale->quantity * $sale->unit_price;
-                    });
+
+                    // FIX: use item's own selling_price for total sales value
+                    $item->total_sales_value = $item->total_quantity_sold * $item->selling_price;
+
                     return $item;
                 })
                 ->sortByDesc('total_quantity_sold')
                 ->take(10)
                 ->values();
+
 
                 $view = 'reports.partials.top_moving';
                 break;
@@ -195,14 +197,15 @@ class ReportController extends Controller
                 ->map(function ($item) {
                     $item->sales_count = $item->salesOrderItems->count();
                     $item->total_quantity_sold = $item->salesOrderItems->sum('quantity');
-                    $item->total_sales_value = $item->salesOrderItems->sum(function ($sale) {
-                        return $sale->quantity * $sale->unit_price;
-                    });
+
+                    // FIX: Multiply quantity by item's own selling_price
+                    $item->total_sales_value = $item->total_quantity_sold * $item->selling_price;
+
                     return $item;
                 })
                 ->sortBy('sales_count') // Ascending for slow movers
                 ->take(10)
-                ->values(); // Reset keys
+                ->values();
 
                 $view = 'reports.partials.slow_moving';
                 break;
