@@ -18,6 +18,8 @@ use App\Http\Controllers\ModelController\UnitController;
 use App\Http\Controllers\ModelController\WarehouseController;
 use App\Http\Controllers\ModelController\InvoiceController;
 use App\Http\Controllers\ModelController\ItemBatchController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\MailController;
 use App\Http\Controllers\ReportController;
 
 /*
@@ -50,6 +52,10 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // load 404 page
 Route::get('/error/404', [LoginController::class, 'errorPage'])->name('error404');
+
+//emails
+Route::get('/lowStockAlerts', [NotificationController::class, 'lowStockAlert'])->name('low-stock-alert');
+Route::get('/send-mail', [MailController::class, 'sendTestMail'])->name('sendTestMail');
 
 
 
@@ -170,9 +176,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('sales-order-items/{sales_order_item}/edit', [SalesOrderItemController::class, 'edit'])->name('sales_order_items.edit');
     Route::put('sales-order-items/{sales_order_item}', [SalesOrderItemController::class, 'update'])->name('sales_order_items.update');
     Route::delete('sales-order-items/{sales_order_item}', [SalesOrderItemController::class, 'destroy'])->name('sales_order_items.destroy');
-
-    //emails
-    Route::get('/send-mail', 'App\Http\Controllers\ModelController\MailController@sendTestMail');
 
     // Suppliers
     Route::get('suppliers', [SupplierController::class, 'index'])->name('suppliers.index');
