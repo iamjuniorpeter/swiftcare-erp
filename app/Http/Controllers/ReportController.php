@@ -93,41 +93,141 @@ class ReportController extends Controller
         }
     }
 
+    // public function generate(Request $request)
+    // {
+    //     $reportType = $request->input('report_type');
+    //     $report_period = 'for All Time';
+
+    //     if ($request->start_date || $request->end_date) {
+    //         $start = $request->start_date ? Carbon::parse($request->start_date)->format('jS M, Y') : 'beginning';
+    //         $end = $request->end_date ? Carbon::parse($request->end_date)->format('jS M, Y') : 'today';
+    //         $report_period = "from {$start} to {$end}";
+    //     }
+
+
+    //     $data = $this->getReportData($reportType, $request); // <-- shared method
+    //     $view = match ($reportType) {
+    //         'stock_summary'     => 'reports.exports.stock_summary',
+    //         'low_stock'         => 'reports.exports.low_stock',
+    //         'stock_movement'    => 'reports.exports.stock_movement',
+    //         'top_moving'        => 'reports.exports.top_moving',
+    //         'slow_moving'       => 'reports.exports.slow_moving',
+    //         'inventory_valuation' => 'reports.exports.inventory_valuation',
+    //         'import_history'    => 'reports.exports.import_upload_history',
+    //         default             => null,
+    //     };
+
+    //     if (!$view) {
+    //         return back()->with('error', 'Invalid report type selected.');
+    //     }
+
+    //     return view('reports.index', [
+    //         'view' => $view,
+    //         'records' => $data['records'] ?? [],
+    //         'start_date' => $request->start_date,
+    //         'end_date' => $request->end_date,
+    //         'report_period' => $report_period,
+    //     ]);
+    // }
+
     public function generate(Request $request)
     {
+
         $reportType = $request->input('report_type');
-        $report_period = 'for All Time';
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
 
-        if ($request->start_date || $request->end_date) {
-            $start = $request->start_date ? Carbon::parse($request->start_date)->format('jS M, Y') : 'beginning';
-            $end = $request->end_date ? Carbon::parse($request->end_date)->format('jS M, Y') : 'today';
-            $report_period = "from {$start} to {$end}";
+        $start = $startDate ? Carbon::parse($startDate)->startOfDay() : null;
+        $end = $endDate ? Carbon::parse($endDate)->endOfDay() : null;
+
+        $merchantID = auth()->user()->accountID;
+
+        $data = [];
+
+        switch ($reportType) {
+            case 'low_stock':
+                //dd('Okat');
+                $data = Item::withSum('batches', 'quantity')
+                ->where('merchantID', $merchantID)
+                ->havingRaw('IFNULL(batches_sum_quantity, 0) <= reorder_level')
+                ->get();
+
+                $view = 'reports.partials.low_stock';
+
+                break;
+
+            case 'top_moving':
+                $data = Item::withCount([
+                    'salesOrderItems as sales_count' => function ($query) use ($start, $end) {
+                        if ($start) $query->where('created_at', '>=', $start);
+                        if ($end) $query->where('created_at', '<=', $end);
+                    }
+                ])
+                ->with([
+                    'salesOrderItems' => function ($query) use ($start, $end) {
+                        if ($start) $query->where('created_at', '>=', $start);
+                        if ($end) $query->where('created_at', '<=', $end);
+                    }
+                ])
+                ->where('merchantID', $merchantID)
+                ->get()
+                ->map(function ($item) {
+                    $item->total_quantity_sold = $item->salesOrderItems->sum('quantity');
+                    $item->total_sales_value = $item->salesOrderItems->sum(function ($sale) {
+                        return $sale->quantity * $sale->unit_price;
+                    });
+                    return $item;
+                })
+                ->sortByDesc('total_quantity_sold')
+                ->take(10)
+                ->values();
+
+                $view = 'reports.partials.top_moving';
+                break;
+
+            case 'slow_moving':
+                $data = Item::where('merchantID', $merchantID)
+                ->with(['salesOrderItems' => function ($query) use ($start, $end) {
+                    if ($start) $query->where('created_at', '>=', $start);
+                    if ($end) $query->where('created_at', '<=', $end);
+                }])
+                ->get()
+                ->map(function ($item) {
+                    $item->sales_count = $item->salesOrderItems->count();
+                    $item->total_quantity_sold = $item->salesOrderItems->sum('quantity');
+                    $item->total_sales_value = $item->salesOrderItems->sum(function ($sale) {
+                        return $sale->quantity * $sale->unit_price;
+                    });
+                    return $item;
+                })
+                ->sortBy('sales_count') // Ascending for slow movers
+                ->take(10)
+                ->values(); // Reset keys
+
+                $view = 'reports.partials.slow_moving';
+                break;
+
+            case 'inventory_valuation':
+                $data = Item::where('merchantID', $merchantID)
+                    ->with(['batches' => function ($q) use ($start, $end) {
+                        if ($start) $q->where('created_at', '>=', $start);
+                        if ($end) $q->where('created_at', '<=', $end);
+                    }])
+                    ->get()
+                    ->map(function ($item) {
+                        $totalQty = $item->batches->sum('quantity');
+                        $item->total_value = $totalQty * $item->cost_price;
+                        $item->available_quantity = $totalQty;
+                        return $item;
+                    });
+                $view = 'reports.partials.inventory_valuation';
+                break;
+
+            default:
+                return back()->with('error', 'Invalid report type selected.');
         }
 
-
-        $data = $this->getReportData($reportType, $request); // <-- shared method
-        $view = match ($reportType) {
-            'stock_summary'     => 'reports.exports.stock_summary',
-            'low_stock'         => 'reports.exports.low_stock',
-            'stock_movement'    => 'reports.exports.stock_movement',
-            'top_moving'        => 'reports.exports.top_moving',
-            'slow_moving'       => 'reports.exports.slow_moving',
-            'inventory_valuation' => 'reports.exports.inventory_valuation',
-            'import_history'    => 'reports.exports.import_upload_history',
-            default             => null,
-        };
-
-        if (!$view) {
-            return back()->with('error', 'Invalid report type selected.');
-        }
-
-        return view('reports.index', [
-            'view' => $view,
-            'records' => $data['records'] ?? [],
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'report_period' => $report_period,
-        ]);
+        return view('reports.index', compact('data', 'view'));
     }
 
     protected function getReportData($reportType, $request)
